@@ -1,0 +1,550 @@
+﻿@model nxLINEadmin.ViewModels.MemberViewModel
+@{
+    ViewData["Title"] = "顧客一覧";
+}
+@section Css {
+
+    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.4.2/css/all.css">
+    <link rel="stylesheet" href="~/assets/vendor/daterangepicker/daterangepicker.css" type="text/css" />
+    <link rel="stylesheet" href="~/css/custom.css" type="text/css" />
+    <link href="~/css/bootstrap-tagsinput.css"
+          rel="stylesheet" />
+}
+<div class="my-4 d-flex justify-content-between align-items-center">
+    <h3 class="b-900 ml-2 mb-0"><i class="fad fa-users text-main" aria-hidden="true"></i>&nbsp;顧客一覧</h3>
+    <div class="d-flex justify-content-start align-items-center">
+        <a id="csv_download" class="btn btn-gray btn-sm py-2 px-4 rounded-pill ms-2"><i class="fas fa-cloud-download-alt" aria-hidden="true"></i>&nbsp;&nbsp;LINE Idダウンロード</a>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-md-3 col-sm-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="mb-2 col-12">
+                        <label for="member_code" class="form-label mb-0">会員番号</label>
+                        <input type="text" id="member_code" class="form-control">
+                    </div>
+                    <div class="mb-2 col-12">
+                        <label for="member_name" class="form-label mb-0">名前</label>
+                        <input type="text" id="member_name" class="form-control">
+                    </div>
+                    <div class="mb-2 col-12">
+                        <label for="kana" class="form-label mb-0">カナ</label>
+                        <input type="text" id="kana" class="form-control">
+                    </div>
+                    <div class="mb-2 col-12">
+                        <label for="simpleinput" class="form-label mb-0">設年月日</label>
+                        <div class="row gy-2 gx-2 align-items-center">
+                            <div class="col-4">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="year">
+                                    <div class="input-group-text">年</div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="month">
+                                    <div class="input-group-text">月</div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="day">
+                                    <div class="input-group-text">日</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-2 col-12">
+                        <label for="simpleinput" class="form-label mb-0">性別</label>
+                        <div class="row mt-1">
+                            <div class="col-auto">
+                                <div class="form-check form-check-inline">
+                                    <input type="checkbox" class="form-check-input" id="gender1">
+                                    <label class="form-check-label" for="gender1">男</label>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="form-check form-check-inline">
+                                    <input type="checkbox" class="form-check-input" id="gender2">
+                                    <label class="form-check-label" for="gender2">女</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-2 col-12">
+                        <label for="phone" class="form-label mb-0">電話番号</label>
+                        <input type="text" id="phone" class="form-control">
+                    </div>
+                    <div class="mb-2 col-12">
+                        <label for="email" class="form-label mb-0">メールアドレス</label>
+                        <input type="text" id="email" class="form-control">
+                    </div>
+                    <div class="mb-2 col-12">
+                        <label for="join_date" class="form-label mb-0">登録日</label>
+                        <input type="text" class="form-control date" id="join_date" value="" data-toggle="date-picker" data-cancel-class="btn-warning">
+                    </div>
+                    <div class="mb-2 col-12">
+                        <label for="point" class="form-label mb-0">ポイント</label>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <input type="number" id="point_start" name="point" class="form-control">
+                            </div>
+                            <div class="col-md-2 align-self-center text-center">
+                                <label class="text-center"> ~ </label>
+                            </div>
+                            <div class="col-md-5">
+                                <input type="number" id="point_end" name="point" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-2 col-12">
+                        <label for="tag_include" class="form-label mb-0">タグ(含む)</label><br />
+                        <input type="text" class="form-control" id="tag_include" data-role="tagsinput">
+                    </div>
+                    <div class="mb-2 col-12">
+                        <label for="tag_except" class="form-label mb-0">タグ(除く)</label><br />
+                        <input type="text" class="form-control" id="tag_except" data-role="tagsinput">
+                    </div>
+                    
+                    <div class="text-right">
+                        <button type="button" class="btn btn-outline-success rounded-pill" id="btn_search" style="width: 150px;"><i class="mdi mdi-account-search"></i> 検索</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9 col-sm-12">
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="row table-responsive">
+                    <table class="table mb-0 data-table table-striped table-bordered" style="width: 100%">
+                        <thead>
+                            <tr style="background-color: #313a46; color: white;">
+                                <th scope="col" class="text-center"><input type="checkbox" id="table-all-check"></th>
+                                <th scope="col" class="text-center">会員番号</th>
+                                <th scope="col" class="text-center">名前</th>
+                                <th scope="col" class="text-center">ランク</th>
+                                <th scope="col" class="text-center">ポイント</th>
+                                <th scope="col" class="text-center">対応</th>
+                                <th scope="col" class="text-center">登録日</th>
+                                <th scope="col" class="text-center"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Note Modal -->
+<div class="modal fade" id="editNoteModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editNoteModalTitle">通信の編集</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <input class="d-none" id="edit_note_id">
+        <textarea class="form-control" id="editNoteMoalText" rows="3"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="saveNote" class="btn btn-primary">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Member Modal -->
+<div class="modal fade" id="editMemberModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editMemberModalTitle">メンバーを編集する</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <input class="d-none" id="edit_member_id">
+        <div class="mb-2">
+            <label for="editMemberName" class="form-label"><span style="color: red;">*</span> 会員番号</label>
+            <input type="text" id="editMemberCode" class="form-control" required>
+        </div>
+        <div class="mb-2">
+            <label for="editMemberName" class="form-label"><span style="color: red;">*</span> 名前</label>
+            <input type="text" id="editMemberName" class="form-control" required>
+        </div>
+        <div class="mb-2">
+            <label for="editMemberCompanyName" class="form-label"><span style="color: red;">*</span> カナ</label>
+            <input type="text" id="editMemberKana" class="form-control" required>
+        </div>
+        <div class="mb-2">
+            <label for="editMemberPhoneNumber" class="form-label"><span style="color: red;">*</span> 電話番号</label>
+            <input type="text" id="editMemberPhoneNumber" class="form-control" required>
+        </div>
+        <div class="mb-2">
+            <label for="editMemberMailAddress" class="form-label">メールアドレス</label>
+            <input type="text" id="editMemberMailAddress" class="form-control">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" id="editMemberButton" class="btn btn-primary">はい</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Member Modal -->
+<div class="modal fade" id="deleteMemberModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteMemberModalTitle">情報</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <input class="d-none" id="delete_member_id">
+        <p style="font-size: 20px;">メンバーを削除しますか?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">いいえ</button>
+        <button type="button" id="deleteMemberButton" class="btn btn-primary">はい</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+    <script src="~/assets/vendor/daterangepicker/moment.min.js"></script>
+    <script src="~/assets/vendor/daterangepicker/daterangepicker.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.min.js"></script>
+    <script>
+        const locale_datetimepicker = {
+            format: 'YYYY年MM月DD日',
+            "daysOfWeek": [
+                "日",
+                "月",
+                "火",
+                "水",
+                "木",
+                "金",
+                "土"
+            ],
+            "monthNames": [
+                "1月",
+                "2月",
+                "3月",
+                "4月",
+                "5月",
+                "6月",
+                "7月",
+                "8月",
+                "9月",
+                "10月",
+                "11月",
+                "12月"
+            ],
+            clear: "クリア"
+        };
+        $(function () {
+            $('#join_date').daterangepicker({
+                showDropdowns: false,
+                locale: locale_datetimepicker
+            });
+        });
+        var tbl_check = document.getElementById("table-all-check");
+        tbl_check.onclick = () => {
+            var row_checks = document.querySelectorAll(".card-body table .row-check")
+            for (let i = 0; i < row_checks.length; i++) {
+                row_checks[i].checked = tbl_check.checked;
+            }
+        }
+        var table_data = [];
+        var dataTable;
+        $(document).ready(() => {
+            let url = `https://localhost:7116/api/Members/search`
+            join_date.value = ""
+            fetch(url).then(res => res.json()).then(res => {
+                if (res) {
+                    table_data = res;
+                    dataTable = $(".data-table").DataTable({
+                        bPaginate: true,
+                        bFilter: false,
+                        bInfo: true,
+                        bSortable: true,
+                        bRetrieve: true,
+                        aaSorting: [[1, 'asc']],
+                        data: table_data,
+                        columnDefs: [
+                            { orderable: false, targets: 0 }
+                        ],
+                        columns: [
+                            {
+                                data: null, render: function (data, type, row) {
+                                    return '<input type="checkbox" class="row-check" line-id="' + row.member_lineid + '" />';
+                                }, className: "text-center"
+                            },
+                            { data: 'member_code', className: "text-center" },
+                            {
+                                data: null, render: function (data, type, row) {
+                                    return row.member_lastname + " " + row.member_firstname;
+                                }, className: "text-center"
+                            },
+                            { data: 'member_rank', className: "text-center" },
+                            { data: 'member_hold_point', className: "text-center" },
+                            {
+                                data: null, render: function (data, type, row) {
+                                    return noteButton(row.member_note, row.member_id);
+                                }, className: "text-center" 
+                            },
+                            {
+                                data: null, render: function (data, type, row) {
+                                    return formatDate(row.member_join_date);
+                                }, className: "text-center"
+                            },
+                            {
+                                data: null, render: function (data, type, row) {
+                                    return userInfoEditDelete(row.member_id);
+                                    return '';
+                                }, className: "text-center"
+                            }
+                        ],
+                        iDisplayLength: 25
+                    });
+                }
+            }).catch(e => {
+                alert(e)
+            })
+        })
+        editMemberButton.onclick = () => {
+            if ($('#editMemberCode').val() == '')
+                $('#editMemberCode').addClass('border-danger');
+            else $('#editMemberCode').removeClass('border-danger');
+            if ($('#editMemberName').val() == '')
+                $('#editMemberName').addClass('border-danger');
+            else $('#editMemberName').removeClass('border-danger');
+            if ($('#editMemberKana').val() == '')
+                $('#editMemberKana').addClass('border-danger');
+            else $('#editMemberKana').removeClass('border-danger');
+            if ($('#editMemberPhoneNumber').val() == '')
+                $('#editMemberPhoneNumber').addClass('border-danger');
+            else $('#editMemberPhoneNumber').removeClass('border-danger');
+            $.ajax({
+                url: `https://localhost:7116/api/Members/edit_member/${$('#edit_member_id').val()}`,
+                type: 'GET',
+                data: {
+                    'code': $('#editMemberCode').val(),
+                    'name': $('#editMemberName').val(),
+                    'kana': $('#editMemberKana').val(),
+                    'tel': $('#editMemberPhoneNumber').val(),
+                    'email': "s" + $('#editMemberMailAddress').val()
+                },
+                success: function(response) {
+                    $('#editMemberModal').modal('hide');
+                    btn_search.click();
+                    $.toast({
+                        heading: '成功',
+                        text: 'メンバーは正常に変更されました。',
+                        position: 'top-right',
+                        showHideTransition: 'slide',
+                        icon: 'success'
+                    })
+                },
+                error: function(xhr, status, error) {
+                    $.toast({
+                        heading: '失敗',
+                        text: 'メンバーは変更されなかった。',
+                        position: 'top-right',
+                        showHideTransition: 'slide',
+                        icon: 'error'
+                    })
+                }
+            });
+        }
+        deleteMemberButton.onclick = () => {
+            $.ajax({
+                url: `https://localhost:7116/api/Members/${$('#delete_member_id').val()}`,
+                type: 'DELETE',
+                success: function(response) {
+                    $('#deleteMemberModal').modal('hide');
+                    btn_search.click();
+                    $.toast({
+                        heading: '成功',
+                        text: 'メンバーは正常に削除されました。',
+                        position: 'top-right',
+                        showHideTransition: 'slide',
+                        icon: 'success'
+                    })
+                },
+                error: function(xhr, status, error) {
+                    $.toast({
+                        heading: '失敗',
+                        text: 'メンバーは削除されていませんでした。',
+                        position: 'top-right',
+                        showHideTransition: 'slide',
+                        icon: 'error'
+                    })
+                }
+            });
+        }
+        saveNote.onclick = () => {
+            $.ajax({
+                url: `https://localhost:7116/api/Members/edit_note`,
+                type: 'GET',
+                data: {
+                    'id': $('#edit_note_id').val(),
+                    'note': "s" + $('#editNoteMoalText').val()
+                },
+                success: function(response) {
+                    $.toast({
+                        heading: '成功',
+                        text: 'メンバーノートは正常に変更されました。',
+                        position: 'top-right',
+                        showHideTransition: 'slide',
+                        icon: 'success'
+                    })
+                    $('#editNoteModal').modal('hide');
+                    btn_search.click();
+                },
+                error: function(xhr, status, error) {
+                    $.toast({
+                        heading: '失敗',
+                        text: '会員メモは変更ありません。',
+                        position: 'top-right',
+                        showHideTransition: 'slide',
+                        icon: 'error'
+                    })
+                }
+            });
+        }
+        csv_download.onclick = () => {
+            let checked_rows = $('tbody > tr > td > input[type=checkbox]:checked');
+            let lineIds = [];
+            checked_rows.each(function() {
+                lineIds.push($(this).attr('line-id'));
+            });
+            $.ajax({
+                url: 'https://localhost:7116/api/Members/lineid_csv_download?' + $.param({lineIds: lineIds}, true),
+                type: 'GET',
+                success: function(response) {
+                    let data = response;
+                    let file = new Blob([data], { type: typeof response });
+                    let downloadLink = document.createElement('a');
+
+                    downloadLink.download = 'lineid.csv';
+                    downloadLink.href = window.URL.createObjectURL(file);
+                    downloadLink.style.display = 'none';
+
+                    document.body.appendChild(downloadLink);
+                    downloadLink.click();
+                }
+            });
+        }
+        btn_search.onclick = () => {
+            var dateRangeString = $('#join_date').val();
+            var dateArray = ["",""];
+            if (dateRangeString != undefined && dateRangeString != "") {
+                dateRangeString = dateRangeString.replaceAll("年", "-");
+                dateRangeString = dateRangeString.replaceAll("月", "-");
+                dateRangeString = dateRangeString.replaceAll("日", "");
+                dateRangeString.replaceAll(" ", "");
+                dateArray = dateRangeString.split(" - ");
+            }
+
+            gender = "";
+            if(gender1.checked == true) {
+                gender += "1,"
+            }
+            if (gender2.checked == true) {
+                gender += "2,"
+            }
+            if (gender.endsWith(",")) {
+                // Remove the last character using slice()
+                gender = gender.slice(0, -1);
+            }
+
+            let url = `https://localhost:7116/api/Members/search?member_code=${member_code.value}
+            &name=${member_name.value}&kana=${kana.value}&year=${year.value}&month=${month.value}&day=${day.value}
+            &gender=${gender}&phone=${phone.value}&email=${email.value}&join_date_start=${dateArray[0]}
+            &join_date_end=${dateArray[1]}&point_start=${point_start.value}&point_end=${point_end.value}
+            &tag_include=${tag_include.value}&tag_except=${tag_except.value}`;
+            fetch(url).then(res => res.json()).then(res => {
+                table_data = res;
+                dataTable.clear().rows.add(table_data).draw();
+            }).catch(e => {
+                alert(e)
+            })
+        }
+
+        function editMember(member_id) {
+            $.ajax({
+                url: 'https://localhost:7116/api/Members/'+member_id,
+                type: 'GET',
+                success: function(response) {
+                    $('#edit_member_id').val(member_id);
+                    $('#editMemberCode').val(response.member_code);
+                    $('#editMemberName').val(response.member_lastname);
+                    $('#editMemberKana').val(response.member_lastname_kana);
+                    $('#editMemberMailAddress').val(response.member_email);
+                    $('#editMemberPhoneNumber').val(response.member_tel);
+                }
+            });
+            $('#editMemberModal').modal('show');
+        }
+
+        function deleteMember(member_id) {
+            $('#delete_member_id').val(member_id);
+            $('#deleteMemberModal').modal('show');
+        }
+
+        function showEditNoteModal(member_id) {
+            $.ajax({
+                url: 'https://localhost:7116/api/Members/'+member_id,
+                type: 'GET',
+                success: function(response) {
+                    $('#edit_note_id').val(response.member_id);
+                    $('#editNoteMoalText').val(response.member_note);
+                }
+            });
+            $('#editNoteModal').modal('show');
+        }
+
+        function noteButton(noteStr, member_id) {
+            if (noteStr == '')
+                return '<button class="btn btn-outline-secondary btn-sm" onclick="showEditNoteModal('+member_id+')"><i class="fa fa-plus"></i></button>'
+            else
+                return '<button class="btn btn-outline-secondary btn-sm" onclick="showEditNoteModal('+member_id+')"><i class="fa fa-pen"></i></button>'
+        }
+
+        function userInfoEditDelete(member_id) {
+            return  `<button class="btn btn-outline-secondary btn-sm me-1"><i class="fa fa-message-dots"></i></button>` + 
+                    `<button class="btn btn-outline-secondary btn-sm me-1" onclick="editMember(${member_id})"><i class="fa fa-pen"></i></button>` + 
+                    `<button class="btn btn-outline-danger btn-sm" onclick="deleteMember(${member_id})"><i class="fa fa-trash"></i></button>`;
+            
+        }
+        
+        function formatDate(inputDateStr) {
+            // Parse the input date string
+            const inputDate = new Date(inputDateStr);
+
+            // Get the year, month, and day components
+            const year = inputDate.getFullYear();
+            const month = inputDate.getMonth() + 1; // Months are zero-indexed
+            const day = inputDate.getDate();
+
+            // Format the date as "YYYY年MM月DD日"
+            const formattedDate = `${year}年${month.toString().padStart(2, '0')}月${day.toString().padStart(2, '0')}日`;
+
+            return formattedDate;
+        }
+
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
